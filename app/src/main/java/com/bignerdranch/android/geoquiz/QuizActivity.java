@@ -15,11 +15,13 @@ public class QuizActivity extends AppCompatActivity
     private ImageButton mNextButton;
     private ImageButton mPreviousButton;
 
-    private int mCurrentIndex = 0;
+    private TextView mScoreTextView;
+
     private int mScore = 0;
 
+    private int mCurrentIndex = 0;
     private TextView mQuestionTextView;
-    public Question[] mQuestionBank = new Question[] {
+    private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
             new Question(R.string.question_mideast, false),
@@ -27,7 +29,6 @@ public class QuizActivity extends AppCompatActivity
             new Question(R.string.question_americas, true),
             new Question(R.string.question_asia, true),
     };
-    private TextView mScoreTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,15 +64,6 @@ public class QuizActivity extends AppCompatActivity
     {
         mScoreTextView = (TextView) findViewById(R.id.score_text_view);
         updateScore();
-    }
-
-    protected void updateQuestion() {
-        int question = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(question);
-    }
-
-    protected void updateScore() {
-        mScoreTextView.setText("Score: " + mScore);
     }
 
     protected void buildTrueButton()
@@ -154,5 +146,14 @@ public class QuizActivity extends AppCompatActivity
 
         updateScore();
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateQuestion() {
+        int question = mQuestionBank[mCurrentIndex].getTextResId();
+        mQuestionTextView.setText(question);
+    }
+
+    private void updateScore() {
+        mScoreTextView.setText("Score: " + mScore);
     }
 }

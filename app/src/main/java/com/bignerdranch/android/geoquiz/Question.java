@@ -2,17 +2,13 @@ package com.bignerdranch.android.geoquiz;
 
 public class Question
 {
-    private int mTextResId;
     private boolean mAnswerTrue;
+    private int mTextResId;
 
-    public void setTextResId(int textResId)
+    public Question(int textResId, boolean answerTrue)
     {
         mTextResId = textResId;
-    }
-
-    public int getTextResId()
-    {
-        return mTextResId;
+        mAnswerTrue = answerTrue;
     }
 
     public void setAnswerTrue(boolean answerTrue)
@@ -25,9 +21,13 @@ public class Question
         return mAnswerTrue;
     }
 
-    public Question(int textResId, boolean answerTrue)
+    public void setTextResId(int textResId)
     {
         mTextResId = textResId;
-        mAnswerTrue = answerTrue;
+    }
+
+    public int getTextResId()
+    {
+        return mTextResId;
     }
 }

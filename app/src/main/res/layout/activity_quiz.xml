@@ -67,5 +67,4 @@
             android:src="@drawable/arrow_right"
             />
     </LinearLayout>
-
 </LinearLayout>
