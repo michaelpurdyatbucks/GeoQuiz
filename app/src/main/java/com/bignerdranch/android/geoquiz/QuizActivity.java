@@ -2,6 +2,7 @@ package com.bignerdranch.android.geoquiz;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -10,6 +11,10 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity
 {
+    private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
+    private static final String SCORE_INDEX = "score";
+
     private Button mTrueButton;
     private Button mFalseButton;
     private ImageButton mNextButton;
@@ -21,7 +26,7 @@ public class QuizActivity extends AppCompatActivity
 
     private int mCurrentIndex = 0;
     private TextView mQuestionTextView;
-    private Question[] mQuestionBank = new Question[] {
+    private Question[] mQuestionBank = new Question[]{
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
             new Question(R.string.question_mideast, false),
@@ -34,7 +39,14 @@ public class QuizActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "OnCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
+
+        if (savedInstanceState != null)
+        {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mScore = savedInstanceState.getInt(SCORE_INDEX, 0);
+        }
 
         buildQuestions();
         buildScore();
@@ -44,6 +56,43 @@ public class QuizActivity extends AppCompatActivity
 
         buildNextButton();
         buildPreviousButton();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Log.d(TAG, "OnStart() called");
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        Log.d(TAG, "OnStart() called");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putInt(SCORE_INDEX, mScore);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
     }
 
     protected void buildQuestions()
@@ -126,34 +175,62 @@ public class QuizActivity extends AppCompatActivity
 
     private void checkAnswer(boolean userPressedTrue)
     {
-        boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-
+        Question currentQuestion = mQuestionBank[mCurrentIndex];
         int messageResId = 0;
 
-        if (userPressedTrue == answerIsTrue)
+        if (currentQuestion.isAnswered())
         {
+            messageResId = R.string.already_answered_toast;
+        }
+        else if (userPressedTrue == currentQuestion.isAnswerTrue())
+        {
+            currentQuestion.setAlreadyAnswered(true);
             messageResId = R.string.correct_toast;
             mScore++;
         }
         else
         {
+            currentQuestion.setAlreadyAnswered(true);
             messageResId = R.string.incorrect_toast;
-            if (mScore != 0)
-            {
-                mScore--;
-            }
         }
 
         updateScore();
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+
+        if (allQuestionsAnswered())
+        {
+            float percentage = (float) mScore!=0? ((mScore*100)/mQuestionBank.length) : 0;
+            String overallScore = "Overall score: " + percentage + "%";
+            Toast.makeText(this, overallScore, Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            mNextButton.performClick();
+        }
     }
 
-    private void updateQuestion() {
+    private void updateQuestion()
+    {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
     }
 
-    private void updateScore() {
+    private void updateScore()
+    {
         mScoreTextView.setText("Score: " + mScore);
+    }
+
+    private boolean allQuestionsAnswered()
+    {
+        boolean allAnswered = true;
+        for(Question question : mQuestionBank)
+        {
+            if (question.isNotAnswered())
+            {
+                allAnswered = false;
+                break;
+            }
+        }
+        return allAnswered;
     }
 }
