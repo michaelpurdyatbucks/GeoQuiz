@@ -17,6 +17,7 @@ public class QuizActivity extends AppCompatActivity
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
     private static final String SCORE_INDEX = "score";
+    private static final String CHEAT_INDEX = "cheat";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
@@ -103,6 +104,7 @@ public class QuizActivity extends AppCompatActivity
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         savedInstanceState.putInt(SCORE_INDEX, mScore);
+        savedInstanceState.putBoolean(CHEAT_INDEX, mIsCheater);
     }
 
     @Override
