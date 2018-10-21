@@ -1,5 +1,6 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ public class QuizActivity extends AppCompatActivity
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
     private static final String SCORE_INDEX = "score";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -26,7 +28,7 @@ public class QuizActivity extends AppCompatActivity
     private TextView mScoreTextView;
 
     private int mScore = 0;
-
+    private boolean mIsCheater;
     private int mCurrentIndex = 0;
     private TextView mQuestionTextView;
     private Question[] mQuestionBank = new Question[]{
@@ -61,6 +63,23 @@ public class QuizActivity extends AppCompatActivity
 
         buildNextButton();
         buildPreviousButton();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (resultCode != Activity.RESULT_OK)
+        {
+            return ;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT)
+        {
+            if (data == null)
+            {
+                return ;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 
     @Override
@@ -156,7 +175,7 @@ public class QuizActivity extends AppCompatActivity
             {
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
             };
         });
     }
@@ -170,6 +189,7 @@ public class QuizActivity extends AppCompatActivity
             public void onClick(View view)
             {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -198,7 +218,11 @@ public class QuizActivity extends AppCompatActivity
         Question currentQuestion = mQuestionBank[mCurrentIndex];
         int messageResId = 0;
 
-        if (currentQuestion.isAnswered())
+        if (mIsCheater)
+        {
+            messageResId = R.string.judgment_toast;
+        }
+        else if (currentQuestion.isAnswered())
         {
             messageResId = R.string.already_answered_toast;
         }
@@ -214,7 +238,11 @@ public class QuizActivity extends AppCompatActivity
             messageResId = R.string.incorrect_toast;
         }
 
-        updateScore();
+        if (!mIsCheater)
+        {
+            updateScore();
+        }
+
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
 
         if (allQuestionsAnswered())
