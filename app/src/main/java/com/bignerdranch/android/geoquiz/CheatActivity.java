@@ -13,8 +13,10 @@ public class CheatActivity extends AppCompatActivity
 {
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
-    private boolean mAnswerIsTrue;
+    private static final String ANSWER_SHOWN_INDEX = "wasAnswerShown";
 
+    private boolean mAnswerIsTrue;
+    private boolean mWasAnswerShown;
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
 
@@ -24,11 +26,29 @@ public class CheatActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
 
+        if (savedInstanceState != null)
+        {
+            mWasAnswerShown = savedInstanceState.getBoolean(ANSWER_SHOWN_INDEX, false);
+        }
+
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
 
         buildShowAnswerButton();
+
+        if (mWasAnswerShown)
+        {
+            showAnswer();
+            setAnswerShownResult();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(ANSWER_SHOWN_INDEX, mWasAnswerShown);
     }
 
     protected void buildShowAnswerButton()
@@ -39,23 +59,29 @@ public class CheatActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (mAnswerIsTrue)
-                {
-                    mAnswerTextView.setText(R.string.true_button);
-                }
-                else
-                {
-                    mAnswerTextView.setText(R.string.false_button);
-                }
-                setAnswerShownResult(true);
+                showAnswer();
+                mWasAnswerShown = true;
+                setAnswerShownResult();
             }
         });
     }
 
-    private void setAnswerShownResult(boolean isAnswerShown)
+    protected void showAnswer()
+    {
+        if (mAnswerIsTrue)
+        {
+            mAnswerTextView.setText(R.string.true_button);
+        }
+        else
+        {
+            mAnswerTextView.setText(R.string.false_button);
+        }
+    }
+
+    private void setAnswerShownResult()
     {
         Intent data = new Intent();
-        data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
+        data.putExtra(EXTRA_ANSWER_SHOWN, mWasAnswerShown);
         setResult(Activity.RESULT_OK, data);
     }
 

@@ -52,6 +52,7 @@ public class QuizActivity extends AppCompatActivity
         {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             mScore = savedInstanceState.getInt(SCORE_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(CHEAT_INDEX, false);
         }
 
         buildQuestions();
@@ -80,6 +81,7 @@ public class QuizActivity extends AppCompatActivity
                 return ;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            mQuestionBank[mCurrentIndex].setHasBeenCheatedOn(mIsCheater);
         }
     }
 
@@ -220,7 +222,7 @@ public class QuizActivity extends AppCompatActivity
         Question currentQuestion = mQuestionBank[mCurrentIndex];
         int messageResId = 0;
 
-        if (mIsCheater)
+        if (mIsCheater || currentQuestion.hasBeenCheatedOn())
         {
             messageResId = R.string.judgment_toast;
         }
@@ -240,10 +242,7 @@ public class QuizActivity extends AppCompatActivity
             messageResId = R.string.incorrect_toast;
         }
 
-        if (!mIsCheater)
-        {
-            updateScore();
-        }
+        updateScore();
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
 
