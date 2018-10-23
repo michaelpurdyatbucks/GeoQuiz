@@ -224,6 +224,7 @@ public class QuizActivity extends AppCompatActivity
 
         if (mIsCheater || currentQuestion.hasBeenCheatedOn())
         {
+            currentQuestion.setAlreadyAnswered(true);
             messageResId = R.string.judgment_toast;
         }
         else if (currentQuestion.isAnswered())
