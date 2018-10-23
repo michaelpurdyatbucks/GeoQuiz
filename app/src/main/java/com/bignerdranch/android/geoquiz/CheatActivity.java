@@ -18,10 +18,15 @@ public class CheatActivity extends AppCompatActivity
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
     private static final String ANSWER_SHOWN_INDEX = "wasAnswerShown";
+    private static final String CHEATS_AVAILABLE = "cheatsAvailable";
+
+    private static int mCheatsAvailable = 3;
 
     private boolean mAnswerIsTrue;
     private boolean mWasAnswerShown;
     private TextView mAnswerTextView;
+    private TextView mApiLevelTextView;
+    private TextView mCheatsAvailableTextView;
     private Button mShowAnswerButton;
 
     @Override
@@ -33,12 +38,17 @@ public class CheatActivity extends AppCompatActivity
         if (savedInstanceState != null)
         {
             mWasAnswerShown = savedInstanceState.getBoolean(ANSWER_SHOWN_INDEX, false);
+            mCheatsAvailable = savedInstanceState.getInt(CHEATS_AVAILABLE, 3);
         }
 
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mAnswerTextView = (TextView) findViewById(R.id.answer_text_view);
+        mCheatsAvailableTextView = (TextView) findViewById(R.id.cheats_available_text_view);
+        mApiLevelTextView = (TextView) findViewById(R.id.api_level_text_view);
+        mApiLevelTextView.setText("API Level: " + String.valueOf(Build.VERSION.SDK_INT));
 
+        updateAvailableCheats();
         buildShowAnswerButton();
 
         if (mWasAnswerShown)
@@ -53,6 +63,7 @@ public class CheatActivity extends AppCompatActivity
     {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(ANSWER_SHOWN_INDEX, mWasAnswerShown);
+        savedInstanceState.putInt(CHEATS_AVAILABLE, mCheatsAvailable);
     }
 
     protected void buildShowAnswerButton()
@@ -63,10 +74,13 @@ public class CheatActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                showAnswer();
-                mWasAnswerShown = true;
-                setAnswerShownResult();
-                hideButtonAnimation();
+                if (mCheatsAvailable != 0)
+                {
+                    showAnswer();
+                    mWasAnswerShown = true;
+                    setAnswerShownResult();
+                    hideButtonAnimation();
+                }
             }
         });
     }
@@ -85,6 +99,8 @@ public class CheatActivity extends AppCompatActivity
 
     private void setAnswerShownResult()
     {
+        mCheatsAvailable--;
+        updateAvailableCheats();
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, mWasAnswerShown);
         setResult(Activity.RESULT_OK, data);
@@ -112,6 +128,16 @@ public class CheatActivity extends AppCompatActivity
         {
             mShowAnswerButton.setVisibility(View.INVISIBLE);
         }
+    }
+
+    protected void updateAvailableCheats()
+    {
+        if (mCheatsAvailable == 0)
+        {
+            mShowAnswerButton.setText(R.string.show_answer_button_out_of_cheats);
+        }
+        String cheatsAvailable = "Cheats Available: " + String.valueOf(mCheatsAvailable);
+        mCheatsAvailableTextView.setText(cheatsAvailable);
     }
 
     public static boolean wasAnswerShown(Intent result)
