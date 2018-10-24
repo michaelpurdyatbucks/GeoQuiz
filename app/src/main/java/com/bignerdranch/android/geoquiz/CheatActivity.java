@@ -74,7 +74,7 @@ public class CheatActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (mCheatsAvailable != 0)
+                if (mCheatsAvailable != 0 && !mWasAnswerShown)
                 {
                     showAnswer();
                     mWasAnswerShown = true;
