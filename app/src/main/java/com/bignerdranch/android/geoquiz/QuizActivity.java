@@ -212,6 +212,7 @@ public class QuizActivity extends AppCompatActivity
                     mCurrentIndex = mQuestionBank.length;
                 }
                 mCurrentIndex--;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
