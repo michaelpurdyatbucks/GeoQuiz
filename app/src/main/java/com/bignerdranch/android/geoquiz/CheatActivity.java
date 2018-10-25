@@ -74,7 +74,7 @@ public class CheatActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (mCheatsAvailable != 0 && !mWasAnswerShown)
+                if (mCheatsAvailable != 0)
                 {
                     showAnswer();
                     mWasAnswerShown = true;
@@ -117,12 +117,13 @@ public class CheatActivity extends AppCompatActivity
             anim.addListener(new AnimatorListenerAdapter()
             {
                 @Override
-                public void onAnimationEnd(Animator animator)
+                public void onAnimationEnd(Animator animation)
                 {
-                    super.onAnimationEnd(animator);
+                    super.onAnimationEnd(animation);
                     mShowAnswerButton.setVisibility(View.INVISIBLE);
                 }
             });
+            anim.start();
         }
         else
         {
