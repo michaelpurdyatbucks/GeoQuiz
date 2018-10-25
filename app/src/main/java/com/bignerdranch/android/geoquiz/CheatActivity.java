@@ -48,8 +48,8 @@ public class CheatActivity extends AppCompatActivity
         mApiLevelTextView = (TextView) findViewById(R.id.api_level_text_view);
         mApiLevelTextView.setText("API Level: " + String.valueOf(Build.VERSION.SDK_INT));
 
-        updateAvailableCheats();
         buildShowAnswerButton();
+        updateAvailableCheats();
 
         if (mWasAnswerShown)
         {
